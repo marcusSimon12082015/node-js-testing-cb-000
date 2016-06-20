@@ -202,9 +202,126 @@ Nice!
 
 Using the steps that we outlined above, define tests for `Post` and `Comment`. You should also do some of your own research to figure out how to write tests for the relationships between these models.
 
+## A Brief Detour
+
+We're getting a little tired of typing `NODE_ENV=test node_modules/.bin/mocha --recursive` (or searching through terminal history with up-arrow clicks) every time we want to run our tests. Wanting to encourage us to run tests often, Node.js provides a mechanism for aliasing our test command.
+
+### package.json scripts
+
+You might have seen the `scripts` section in the `package.json` previously. It provides a way of defining shell scripts that pertain to our pacakge (which, in this case, is the application we're building).
+
+Each script is defined as a key-value pair in JSON. We can define a script `hello` by entering
+
+``` json
+{
+  "scripts": {
+    "hello": "echo \"hello!\""
+   }
+}
+```
+
+We can then run this script with `npm run hello` -- we should see "hello!" printed to the console.
+
+Let's define a `test` script in a similar way.
+
+``` json
+{
+  "scripts": {
+    "test": "NODE_ENV=test mocha --recursive"
+   }
+}
+```
+
+You probably noticed that we left out the `node_modules/.bin` part of our test command. This is because when we run the command through the npm scripts, npm knows to look in the `.bin/` folder of `node_modules/` for the command there -- sweet! Further, since `test` is one of the aliases that npm recognizes by default, we don't even need the `run` in `npm run test` -- we can simply type `npm test` and we'll be good to go!
+
+Try it out!
+
 ## Back to the Server
+
+Okay, so together we tested our `User` model (and learned how to run our tests in a transaction so that we could interact with the actual models without mucking up the test database). You've used this knowledge to test `Comment` and `Post` yourself (you did, right?), so now let's return to testing our main interface to the application.
+
+To do so, we're going to use a tool called `supertest`, which let's us test our routes as if we were making actual HTTP calls. Let's go ahead and install `supertest`: `npm install supertest --save-dev`. Note that we're using the `--save-dev` flag instead of `--save` because we wouldn't need `supertest` in a production deployment of the application.
+
+Let's test `User`-creation first – specifically, the `POST /user` route. We’ll start by requiring `supertest`:
+
+``` javascript
+const supertest = require('supertest')
+```
+
+Then we'll add another `describe` call inside `describe('app')`.:
+
+```javascript
+describe('/user', () => {
+  describe('POST', () => {
+    it('fails with an empty request body', () => {
+    })
+  })
+})
+```
+
+Let's start working on that first test — we're expecting to receive a 400 if we send an empty request body, so let's test for that. You can read [supertest's documentation](https://github.com/visionmedia/supertest) for more info.
+
+``` javascript
+it('fails with an empty request body', done => {
+  supertest(app).
+    post('/user').
+    expect(400, done)
+})
+```
+
+Note that we can just pass the `done` callback to the final `expect` (this is supertest's own expect, not the `expect` that we've pulled out of `chai`).
+
+If everything is set up correctly, the test should pass without incident.
+
+Now let's try testing actually creating a user. Remember, our users have `name`, `username`, and `email` fields, so we'll need to provide those in the tests. We'll add another `it` call under `/user POST`:
+
+``` javascript
+describe('app', () => {
+  describe('up', () => {
+    it('is a function', () => {
+      expect(app.up).to.be.an.instanceof(Function)
+    })
+  })
+
+  describe('/user', () => {
+    describe('POST', () => {
+      it('fails with an empty request body', done => {
+        supertest(server).
+          post('/user').
+          expect(400, done)
+      })
+
+      /** This is new! */
+      it('succeeds with valid name, username, and email', done => {
+        supertest(server).
+          post('/user').
+          send({
+            email: 'test@email.com',
+            name: 'testName',
+            username: 'testUsername'
+          }).
+          set('content-type', 'application/json').
+          expect(200, done)
+      })
+    })
+  })
+})
+```
+
+Again, the test should pass if everything is set up properly.
+
+## What's missing?
+
+You might notice that these tests are pretty barebones, but that they're already pointing us towards certain improvements. For instance, we have no way of ensuring uniqueness on our `users` table — creating a user with the same email as another user won't be prevented, which could lead to weird results down the road.
+
+The great thing about testing, though, is that it forces us to confront these problems early, before they become problems.
+
+As we continue to work on these applications, remember to _follow the tests_: they give us a good sense of where our applications are weak, and where we might need to spend time paying down technical debt.
+
 
 ## Resources
 
 - [BDD with chai.expect](http://chaijs.com/api/bdd/)
 - [Mocha](https://mochajs.com)
+- [supertest](https://github.com/visionmedia/supertest)
+- [superagent](https://github.com/visionmedia/superagent) — supertest builds on superagent's API
