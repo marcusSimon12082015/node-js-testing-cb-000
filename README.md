@@ -7,6 +7,14 @@ Node.js Testing
 2. Explain how to use test hooks
 3. Explain how to use spies
 
+## Introduction
+
+Whenever we undertake something complex, it's important to break down _what needs to happen_ and give it a try in a no-pressure scenario. Musicians practice in their studios before taking it to the stage; athletes work up thousands of reps before big competitions. Scientists tests hypotheses in controlled environments, making sure that their results are verifiable and repeatable.
+
+Programmers can take advantage of warming up and testing too. We do so, it turns out, by writing tests.
+
+Tests model behavior for our code, giving us a chance to try out a few inputs and verify that our code responds as expected. At the heart of each test is an _assertion_, a check that the result of our code is what we expected.
+
 ## Setup
 
 In this lesson, we've set things up a bit differently from usual: we've given you a working app, and we want you to write the tests! Don't worry, we'll guide you each step of the way.
@@ -122,7 +130,7 @@ Hm, the description for that `if` call should have us scratching our heads. Pres
 
 To the Batcave!
 
-![](http://images.rapgenius.com/c6b46da26e0a15515529d689deb01c34.400x300x70.gif)
+![](http://i.giphy.com/Dv62Z34JnlOHC.gif)
 
 We'll need to set up some functionality to wrap all of our tests of the `User` model in a transaction. We can achieve this by declaring a variable in the `describe` clojure (handy, right?) and adding a `beforeEach` and `afterEach` hook. These hooks will run, as their names imply, before and after each test in the current `describe` callback.
 
