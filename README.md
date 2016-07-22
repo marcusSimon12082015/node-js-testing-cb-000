@@ -5,7 +5,6 @@ Node.js Testing
 
 1. Describe a basic testing setup in Node.js
 2. Explain how to use test hooks
-3. Explain how to use spies
 
 ## Introduction
 
@@ -36,7 +35,7 @@ const chai = require('chai')
 
 const expect = chai.expect
 
-describe('app', () => {
+describe('app', function() {
   it('runs')
 })
 ```
@@ -61,9 +60,9 @@ We then pull out the `expect` property on `chai`, since we'll be using the expec
 Then, we encounter our first `describe` block. `describe` is a function that wraps a bunch of calls to the `it` function — it provides a way of organizing our code around different models and behaviors. `describe` calls can be nested:
 
 ``` javascript
-describe('app', () => {
-  describe('API', () => {
-    describe('/some/endpoint', () => {
+describe('app', function() {
+  describe('API', function() {
+    describe('/some/endpoint', function() {
       // tests here
     })
   })
@@ -80,9 +79,9 @@ const app = require('../app')
 
 const expect = chai.expect
 
-describe('app', () => {
-  describe('up', () => {
-    it('is a function', () => {
+describe('app', function() {
+  describe('up', function() {
+    it('is a function', function() {
       expect(app.up).to.be.an.instanceof(Function)
     })
   })
@@ -121,7 +120,7 @@ const expect = chai.expect
 and tell Mocha what you're testing:
 
 ``` javascript
-describe('User', () => {
+describe('User', function() {
   it('saves a record to the database')
 })
 ```
@@ -135,7 +134,7 @@ To the Batcave!
 We'll need to set up some functionality to wrap all of our tests of the `User` model in a transaction. We can achieve this by declaring a variable in the `describe` clojure (handy, right?) and adding a `beforeEach` and `afterEach` hook. These hooks will run, as their names imply, before and after each test in the current `describe` callback.
 
 ``` javascript
-describe('User', () => {
+describe('User', function() {
   let transaction;
 
   beforeEach(done => {
@@ -145,7 +144,7 @@ describe('User', () => {
     })
   })
 
-  afterEach(() => {
+  afterEach(function() {
     return transaction.rollback()
   })
 
@@ -160,7 +159,7 @@ Note that we need to use a `done` callback with `beforeEach` because `bookshelf.
 Now we can write our test:
 
 ``` javascript
-it('saves a record to the database', () => {
+it('saves a record to the database', function() {
   return User.forge().
     // we can use a transaction by setting
     // a `transacting` param in the options
@@ -179,14 +178,14 @@ Let's add global `before` and `after` hooks for setting everything up. In `test/
 ``` javascript
 let server
 
-before(done => {
+before(function(done) {
   return app.up().then(_server => {
     server = _server
     done()
   })
 })
 
-after(() => {
+after(function() {
   server.close()
 })
 ```
@@ -259,9 +258,9 @@ const supertest = require('supertest')
 Then we'll add another `describe` call inside `describe('app')`.:
 
 ```javascript
-describe('/user', () => {
-  describe('POST', () => {
-    it('fails with an empty request body', () => {
+describe('/user', function() {
+  describe('POST', function() {
+    it('fails with an empty request body', function() {
     })
   })
 })
@@ -270,7 +269,7 @@ describe('/user', () => {
 Let's start working on that first test — we're expecting to receive a 400 if we send an empty request body, so let's test for that. You can read [supertest's documentation](https://github.com/visionmedia/supertest) for more info.
 
 ``` javascript
-it('fails with an empty request body', done => {
+it('fails with an empty request body', function(done) {
   supertest(app).
     post('/user').
     expect(400, done)
@@ -284,23 +283,23 @@ If everything is set up correctly, the test should pass without incident.
 Now let's try testing actually creating a user. Remember, our users have `name`, `username`, and `email` fields, so we'll need to provide those in the tests. We'll add another `it` call under `/user POST`:
 
 ``` javascript
-describe('app', () => {
-  describe('up', () => {
-    it('is a function', () => {
+describe('app', function() {
+  describe('up', function() {
+    it('is a function', function() {
       expect(app.up).to.be.an.instanceof(Function)
     })
   })
 
-  describe('/user', () => {
-    describe('POST', () => {
-      it('fails with an empty request body', done => {
+  describe('/user', function() {
+    describe('POST', function() {
+      it('fails with an empty request body', function(done) {
         supertest(server).
           post('/user').
           expect(400, done)
       })
 
       /** This is new! */
-      it('succeeds with valid name, username, and email', done => {
+      it('succeeds with valid name, username, and email', function(done) {
         supertest(server).
           post('/user').
           send({

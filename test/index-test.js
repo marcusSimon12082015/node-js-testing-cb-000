@@ -5,6 +5,6 @@ const app = require('../app')
 
 const expect = chai.expect
 
-describe('app', () => {
+describe('app', function() {
   it('runs')
 })
