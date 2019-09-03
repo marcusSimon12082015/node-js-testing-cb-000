@@ -32,6 +32,18 @@ describe('app', function() {
           post('/user').
           expect(400, done)
         })
+
+        it('succeeds with valid name, username, and email', function(done) {
+        supertest(server).
+          post('/user').
+          send({
+            email: 'test@email.com',
+            name: 'testName',
+            username: 'testUsername'
+          }).
+          set('content-type', 'application/json').
+          expect(200, done)
+      })
     })
   })
 })
