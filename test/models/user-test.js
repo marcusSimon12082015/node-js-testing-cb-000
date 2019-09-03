@@ -24,5 +24,14 @@ describe('User', function() {
    afterEach(function() {
      return transaction.rollback()
    })
-  it('saves a record to the database')
+  it('saves a record to the database',function(){
+    return User.forge().
+   // we can use a transaction by setting
+   // a `transacting` param in the options
+   // we pass to `save()`
+   save(mockUser, { transacting: transaction }).
+   then(user => {
+     expect(user.get('id')).to.be.a('number')
+   })
+  })
 })
