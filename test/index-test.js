@@ -3,7 +3,6 @@ const supertest = require('supertest')
 /* ADD ME! */
 const app = require('../app')
 
-const supertest = require('supertest')
 const expect = chai.expect
 
 let server
