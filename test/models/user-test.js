@@ -12,5 +12,17 @@ const mockUser = {
 }
 
 describe('User', function() {
+  let transaction;
+
+   beforeEach(done => {
+     bookshelf.transaction(t => {
+       transaction = t
+       done()
+     })
+   })
+
+   afterEach(function() {
+     return transaction.rollback()
+   })
   it('saves a record to the database')
 })
