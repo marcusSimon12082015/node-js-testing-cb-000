@@ -10,3 +10,7 @@ const mockUser = {
   name: 'Name',
   username: 'username'
 }
+
+describe('User', function() {
+  it('saves a record to the database')
+})
